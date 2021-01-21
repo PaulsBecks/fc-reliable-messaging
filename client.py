@@ -44,7 +44,8 @@ def run(name):
     try:
       with open(log_file, 'r+') as f:
         for line in f:
-            requests.post(BACKEND_URL, line.rstrip().encode('utf-8'))
+            response = requests.post(BACKEND_URL, line.rstrip().encode('utf-8'))
+            print(response.text)
         f.truncate(0)
     except FileNotFoundError:
       print("No log file available.")
