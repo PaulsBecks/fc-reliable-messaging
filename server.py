@@ -11,11 +11,33 @@ class Server(BaseHTTPRequestHandler) :
   def do_POST(self):
     content_length = int(self.headers['Content-Length']) 
     data = self.rfile.read(content_length).decode('utf-8')
-    with open("server.log", "a") as f:
+    print(data)
+    dataSplit = data.split(" ")
+    peerId = str(dataSplit[0])
+    count = str(dataSplit[-1])
+    peerLogFile = "server-"+peerId+".log"
+    def send_response():
+      self.send_response(200)
+      self.send_header("Content-type", "text/html")
+      self.end_headers()
+      self.wfile.write(("ACK "+count).encode("utf-8"))
+
+    try:
+      with open(peerLogFile, "r") as f:
+        lastEntry = f.readlines()[-1]
+        lastId = str(lastEntry.split(" ")[-1])
+        if int(lastId) > int(count):
+          send_response()
+          return
+    except (FileNotFoundError, IndexError):
+      print("No server.log file available yet.")
+
+    with open(peerLogFile, "a") as f:
+        print("write: "+str(data))
         f.write(str(data) + "\n")
         f.close()
-    print(data)
-    self._set_response()
+    send_response()
+    
 
 def stop_server(server):
   print("Stop server.")

@@ -5,9 +5,27 @@ from sys import exit, argv
 
 BACKEND_URL = "http://localhost:8000"
 
+def write_client_count(count, file_name):
+  with open(file_name, "w") as f:
+    f.write(str(count))
+    f.close()
+
+def read_client_count(file_name):
+  count = 0
+  try:
+    with open(file_name, "r") as f:
+      count = int(f.read()) + 1
+      f.close()
+  except:
+    print("file does not exists")
+  return count
+
 def run(name):
-  print("Start client.")
   log_file = 'client-'+name+'.log'
+  count_log_file = 'client-count-'+name+'.log'
+
+  print("Start client.")
+  count = read_client_count(count_log_file)
   while True:
     # check if data is in file if so send it line by line to the server
     try:
@@ -25,17 +43,20 @@ def run(name):
     ram = psutil.virtual_memory().percent
     now = time.time()
 
-    data = (name + " " + str(cpu) + " " +str(ram) + " "+ str(now))
+    data = (name + " " + str(cpu) + " " +str(ram) + " "+ str(now)+ " "+ str(count))
 
     # try to send data to the server
     try:
-      requests.post(BACKEND_URL, data.encode('utf-8'))
-    except requests.exceptions.RequestException:
+      response = requests.post(BACKEND_URL, data.encode('utf-8'))
+      print(response.text)
+    except requests.exceptions.RequestException as err:
       print("Could not send info to server. Store locally.")
       with open(log_file, "a") as f:
         f.write(data + "\n")
         f.close()
     time.sleep(1)
+    count += 1
+    write_client_count(count, count_log_file)
 
 
 if __name__ == "__main__":
@@ -46,3 +67,4 @@ if __name__ == "__main__":
     run(argv[1]) 
   except KeyboardInterrupt :
     exit(0)
+
