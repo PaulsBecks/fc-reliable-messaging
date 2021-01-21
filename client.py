@@ -1,6 +1,7 @@
 import time
 import psutil
 import requests 
+import os
 from sys import exit, argv 
 
 BACKEND_URL = "http://localhost:8000"
@@ -19,6 +20,18 @@ def read_client_count(file_name):
   except:
     print("file does not exists")
   return count
+
+def write_data_to_log_file(data, log_file):
+  print("Could not send info to server. Store locally.")
+  with open(log_file, "a") as f:
+        f.write(data + "\n")
+        f.close()
+
+def file_is_empty(file_path):
+  try:
+    return os.path.getsize(file_path) == 0
+  except OSError:
+    return True
 
 def run(name):
   log_file = 'client-'+name+'.log'
@@ -45,15 +58,15 @@ def run(name):
 
     data = (name + " " + str(cpu) + " " +str(ram) + " "+ str(now)+ " "+ str(count))
 
-    # try to send data to the server
-    try:
-      response = requests.post(BACKEND_URL, data.encode('utf-8'))
-      print(response.text)
-    except requests.exceptions.RequestException as err:
-      print("Could not send info to server. Store locally.")
-      with open(log_file, "a") as f:
-        f.write(data + "\n")
-        f.close()
+    # try to send data to the server+
+    if file_is_empty(log_file):  
+      try:
+          response = requests.post(BACKEND_URL, data.encode('utf-8'))
+          print(response.text)
+      except requests.exceptions.RequestException as err:
+        write_data_to_log_file(data, log_file)
+    else:
+      write_data_to_log_file(data, log_file)
     time.sleep(1)
     count += 1
     write_client_count(count, count_log_file)
