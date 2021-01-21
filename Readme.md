@@ -21,7 +21,7 @@ python3 server.py
 Run as many as clients and sensors you want.
 
 ```bash
-python3 sensore.py <client-name>
+python3 sensor.py <client-name>
 python3 client.py <client-name>
 ```
 
