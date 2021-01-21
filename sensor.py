@@ -29,7 +29,7 @@ def run(name):
   log_file = 'client-'+name+'.log'
   count_log_file = 'client-count-'+name+'.log'
 
-  print("Start sensore.")
+  print("Start sensor.")
   count = read_client_count(count_log_file)
   while True:
     # generate data
@@ -46,7 +46,7 @@ def run(name):
 
 if __name__ == "__main__":
   if len(argv) != 2:
-    print("Sensore not called correctly. Use: [ python sensore.py <client-name> ]")
+    print("Sensor not called correctly. Use: [ python sensor.py <client-name> ]")
     exit(1)
   try:
     run(argv[1]) 
