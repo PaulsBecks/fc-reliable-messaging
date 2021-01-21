@@ -11,7 +11,6 @@ class Server(BaseHTTPRequestHandler) :
   def do_POST(self):
     content_length = int(self.headers['Content-Length']) 
     data = self.rfile.read(content_length).decode('utf-8')
-    print(data)
     dataSplit = data.split(" ")
     peerId = str(dataSplit[0])
     count = str(dataSplit[-1])
@@ -33,7 +32,7 @@ class Server(BaseHTTPRequestHandler) :
       print("No server.log file available yet.")
 
     with open(peerLogFile, "a") as f:
-        print("write: "+str(data))
+        print(str(data))
         f.write(str(data) + "\n")
         f.close()
     send_response()
