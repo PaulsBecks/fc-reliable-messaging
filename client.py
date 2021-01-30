@@ -4,7 +4,7 @@ import requests
 import os
 from sys import exit, argv 
 
-BACKEND_URL = "http://localhost:8000"
+BACKEND_URL = "http://52.47.185.25:8000"
 
 def file_is_empty(file_path):
   try:
